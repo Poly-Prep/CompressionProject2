@@ -1,0 +1,55 @@
+here=01011;eggs=0101;green=010;like=011;could=01000111;them=0111;anywhere=01000;house=010001;sam-i-am=01;that=0;mouse=0100011;with=010111;would=0110;there=0100
+`;i am `;sam 
+ `;sam `;i am 
+ `;0 `;01 
+ `;0 `;01 
+ `;i do not 011 0 `;01 
+ `;do you 011  
+ 010 0101 and ham 
+ `;i do not 011 0111 `;01 
+ `;i do not 011 
+ 010 0101 and ham 
+ `;0110 you 011 0111  
+ 01011 or 0100 
+ `;i 0110 not 011 0111 
+ 01011 or 0100 
+ `;i 0110 not 011 0111 01000  
+ `;i do not 011 
+ 010 0101 and ham 
+ `;i do not 011 0111 `;01 
+ `;0110 you 011 0111 in a 010001 
+ `;0110 you 011 0111 010111 a 0100011 
+ `;i do not 011 0111 
+ in a 010001 
+ `;i do not 011 0111 
+ 010111 a 0100011 
+ `;i do not 011 0111 
+ 01011 or 0100 
+ `;i do not 011 0111 
+ 01000 
+ `;i do not 011  
+ 010 0101 and ham 
+ `;i do not 011 0111  
+ `;01 
+ `;0110 you eat 0111 
+ in a box 
+ `;0110 you eat 0111 
+ 010111 a fox 
+ `;not in a box  
+ `;not 010111 a fox 
+ `;not in a 010001 
+ `;not 010111 a 0100011 
+ `;i 0110 not eat 0111 
+ 01011 or 0100 
+ `;i 0110 not eat 0111 01000 
+ `;i 0110 not eat 010 0101 and ham 
+ `;i do not 011 0111 `;01 
+ `;0110 you `;01000111 you `;in a car 
+ `;eat 0111 `;eat 0111 `;01011 they are 
+ `;i 0110 not 01000111 not in a car 
+ `;you may 011 0111 `;you will see  
+ `;you may 011 0111 in a tree 
+ `;i 0110 not 01000111 not in a tree 
+ `;not in a car `;you let me be 
+ `;i do not 011 0111 in a box 
+ `;i do not 011 0111 010111 a fox 
