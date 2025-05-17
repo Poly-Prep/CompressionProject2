@@ -9,30 +9,58 @@ import java.util.ArrayList;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
+/**
+ * The {@code CrappyGUI} class provides a graphical user interface (GUI) for compressing and decompressing
+ * text using either a normal or Huffman-based compression algorithm. Users can either input text manually
+ * or select a file, switch between compression and decompression modes, and save the output.
+ * <p>
+ * The GUI includes options to:
+ * <ul>
+ *     <li>Input or load text</li>
+ *     <li>Select between compression and decompression modes</li>
+ *     <li>Choose compression algorithm (normal vs Huffman)</li>
+ *     <li>Display and save compressed or decompressed output</li>
+ * </ul>
+ * <p>
+ * File selection is limited to `.txt` files in a predefined directory. Output is saved in the same directory.
+ */
 public class CrappyGUI implements ActionListener {
-    private JButton switchModeButton;
-    private JComboBox fileSelect;
-    private JButton selectFileButton;
-    private JTextArea inputText;
-    private JButton compressButton;
-    private JTextArea outputText;
-    private JButton saveAsButton;
-    private JTextField filenameField;
-    private JPanel mainPanel;
-    private JCheckBox huffmanAlgCheckBox;
-    private JFrame frame;
+
+    // UI components for user interaction
+    private JButton switchModeButton;     // Switch between compression and decompression modes
+    private JComboBox fileSelect;         // Dropdown to select .txt files
+    private JButton selectFileButton;     // Button to load selected file
+    private JTextArea inputText;          // Area to enter or load text input
+    private JButton compressButton;       // Button to compress or decompress
+    private JTextArea outputText;         // Displays output text
+    private JButton saveAsButton;         // Saves output to file
+    private JTextField filenameField;     // Field to specify output filename
+    private JPanel mainPanel;             // Main content panel
+    private JCheckBox huffmanAlgCheckBox; // Checkbox to select Huffman algorithm
+    private JFrame frame;                 // Main application window
+
+    // Flags to track selected compression algorithm and whether file is Huffman-compressed
     private boolean huffmanAlg = false;
     private boolean selectedHuff = false;
 
+    /**
+     * Constructor initializes and sets up the GUI components,
+     * populates file selection dropdown, and sets default properties.
+     */
     public CrappyGUI() {
+        // Register all action listeners
         switchModeButton.addActionListener(this);
         selectFileButton.addActionListener(this);
         compressButton.addActionListener(this);
         saveAsButton.addActionListener(this);
+
+        // Enable word-wrapping and auto-scrolling
         inputText.setLineWrap(true);
         inputText.setAutoscrolls(true);
         outputText.setLineWrap(true);
         outputText.setAutoscrolls(true);
+
+        // Populate dropdown with .txt files in the working directory
         ArrayList<String> fileNames = new ArrayList<>();
         File[] files = new File("/Users/beckm/IdeaProjects/CompressionProject2").listFiles();
         for (File file : files) {
@@ -41,9 +69,13 @@ public class CrappyGUI implements ActionListener {
             }
         }
         fileSelect.setModel(new DefaultComboBoxModel<>(fileNames.toArray(new String[0])));
+
+        // Default field behavior
         outputText.setEditable(false);
         inputText.setEditable(true);
         filenameField.setText("File.txt");
+
+        // Configure and display main application frame
         frame = new JFrame("Compressor");
         frame.setMinimumSize(new Dimension(800, 600));
         frame.add(mainPanel);
@@ -53,11 +85,19 @@ public class CrappyGUI implements ActionListener {
         frame.setVisible(true);
     }
 
+    /**
+     * Handles all button and component actions triggered by the user.
+     *
+     * @param e the action event representing the user's interaction
+     */
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
+
+        // Toggle between compression and decompression modes
         if (command.equals(switchModeButton.getActionCommand())) {
             fileSelect.removeAllItems();
             if (inputText.isEditable()) {
+                // Switch to decompression mode
                 huffmanAlgCheckBox.setVisible(false);
                 ArrayList<String> fileNames = new ArrayList<>();
                 File[] files = new File("/Users/beckm/IdeaProjects/CompressionProject2").listFiles();
@@ -72,6 +112,7 @@ public class CrappyGUI implements ActionListener {
                 compressButton.setText("\\/ Decompress \\/");
                 switchModeButton.setText("Switch to Compression Mode");
             } else {
+                // Switch to compression mode
                 huffmanAlgCheckBox.setVisible(true);
                 ArrayList<String> fileNames = new ArrayList<>();
                 File[] files = new File("/Users/beckm/IdeaProjects/CompressionProject2").listFiles();
@@ -80,69 +121,55 @@ public class CrappyGUI implements ActionListener {
                         fileNames.add(file.getName());
                     }
                 }
-                compressButton.setText("\\/ Compress \\/");
-
                 fileSelect.setModel(new DefaultComboBoxModel<>(fileNames.toArray(new String[0])));
+                compressButton.setText("\\/ Compress \\/");
                 inputText.setEditable(true);
                 outputText.setEditable(false);
                 switchModeButton.setText("Switch to Decompression Mode");
             }
         }
+
+        // Load file content into the input area
         if (command.equals(selectFileButton.getActionCommand())) {
-            if (fileSelect.getSelectedIndex() == -1) {
+            if (fileSelect.getSelectedIndex() == -1 || fileSelect.getSelectedItem() == null) {
                 showMessageDialog(null, "Please select a file or add text to the input area.");
                 return;
             }
-            if (fileSelect.getSelectedItem() == null) {
-                showMessageDialog(null, "Please create a file or add text to the input area.");
-                return;
-            }
             try {
-                if(((String)fileSelect.getSelectedItem()).contains("compressedHuff")){
-                    selectedHuff = true;
-                } else {
-                    selectedHuff = false;
-                }
-                String content = FileManager.readFile((String) fileSelect.getSelectedItem());
+                String fileName = (String) fileSelect.getSelectedItem();
+                selectedHuff = fileName.contains("compressedHuff");
+                String content = FileManager.readFile(fileName);
                 inputText.setText(content);
             } catch (Exception ex) {
                 showMessageDialog(null, "Error in reading file");
-                return;
             }
         }
+
+        // Compress or decompress text based on current mode
         if (command.equals(compressButton.getActionCommand())) {
+            if (inputText.getText().isEmpty() || inputText.getText().isBlank()) {
+                showMessageDialog(null, "Please select a file or add text to the input area.");
+                return;
+            }
+
             if (inputText.isEditable()) {
+                // Compression logic
                 try {
-                    if (inputText.getText().equals("")) {
-                        showMessageDialog(null, "Please select a file or add text to the input area.");
-                        return;
-                    }
-                    if (inputText.getText().isBlank()) {
-                        showMessageDialog(null, "Please select a file or add text to the input area.");
-                        return;
-                    }
                     String compressedText;
                     if (huffmanAlgCheckBox.isSelected()) {
                         huffmanAlg = true;
                         compressedText = CompressionAlg3.compress(inputText.getText());
-                    }else {
+                    } else {
                         huffmanAlg = false;
                         compressedText = CompressionAlg2.compress(inputText.getText());
                     }
-
                     outputText.setText(compressedText);
                 } catch (Exception ex) {
                     showMessageDialog(null, "Error in compressing text");
                 }
             } else {
+                // Decompression logic
                 try {
-                    if (inputText.getText().equals("")) {
-                        showMessageDialog(null, "Please select a file or add text to the input area.");
-                        return;
-                    }
-                    if (inputText.getText().isBlank()) {
-                        showMessageDialog(null, "Please select a file or add text to the input area.");
-                    }
                     String decompressedText;
                     if (selectedHuff) {
                         decompressedText = CompressionAlg3.decompress(inputText.getText());
@@ -150,52 +177,43 @@ public class CrappyGUI implements ActionListener {
                         decompressedText = CompressionAlg2.decompress(inputText.getText());
                     }
                     outputText.setText(decompressedText);
-                    if (decompressedText.equals("")) {
-                        showMessageDialog(null, "Decompression failed. Please try again.");
-                    }
-                    if (decompressedText.isBlank()) {
+                    if (decompressedText.isEmpty() || decompressedText.isBlank()) {
                         showMessageDialog(null, "Decompression failed. Please try again.");
                     }
                 } catch (Exception ex) {
                     showMessageDialog(null, "Error in decompressing text");
-                    return;
                 }
             }
-
         }
+
+        // Save output to a file
         if (command.equals(saveAsButton.getActionCommand())) {
-            if (outputText.getText().equals("")) {
+            if (outputText.getText().isEmpty() || outputText.getText().isBlank()) {
                 showMessageDialog(null, "Please select a file or add text to the input area and compress or decompress it.");
                 return;
             }
-            if (outputText.getText().isBlank()) {
-                showMessageDialog(null, "Please select a file or add text to the input area and compress or decompress it.");
-                return;
-            }
-            if (filenameField.getText().equals("")) {
+            if (filenameField.getText().isEmpty() || filenameField.getText().isBlank()) {
                 showMessageDialog(null, "Please enter a filename.");
                 return;
             }
-            if (filenameField.getText().isBlank()) {
-                showMessageDialog(null, "Please enter a filename.");
-                return;
-            }
+
             try {
                 String filename;
                 if (inputText.isEditable()) {
-                    if (huffmanAlg) {
-                        filename = "compressedHuff" + filenameField.getText();
-                    } else {
-                        filename = "compressedNorm" + filenameField.getText();
-                    }
-
+                    // Determine file prefix based on selected compression algorithm
+                    filename = huffmanAlg ? "compressedHuff" + filenameField.getText()
+                            : "compressedNorm" + filenameField.getText();
                 } else {
                     filename = filenameField.getText();
                 }
-                if (!filenameField.getText().endsWith(".txt")) filename = filename + ".txt";
+
+                // Ensure the filename ends with .txt
+                if (!filename.endsWith(".txt")) {
+                    filename += ".txt";
+                }
 
                 FileManager.writeFile(filename, outputText.getText());
-                showMessageDialog(null,"Success! File saved as " + filenameField.getText() + " in the same directory as the program.");
+                showMessageDialog(null, "Success! File saved as " + filename + " in the same directory as the program.");
             } catch (Exception ex) {
                 showMessageDialog(null, "Error in writing file");
             }
