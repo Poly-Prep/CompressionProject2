@@ -59,7 +59,6 @@ public class FileManager  {
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("ITSHERE");
             System.out.println("Error in writing file");
             return false;
         }

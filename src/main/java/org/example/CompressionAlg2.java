@@ -12,7 +12,7 @@ import java.util.HashMap;
  * <p>
  * Capitalized words are marked with a special marker "`;" for restoration during decompression.
  */
-public class CompressionAlg3 {
+public class CompressionAlg2 {
 
     /**
      * Compresses a given input text by replacing high-frequency words with binary codes.
@@ -28,14 +28,13 @@ public class CompressionAlg3 {
         // Get list of frequently used words (count > 2, length > 3)
         ArrayList<Word2> highFreqWords = BinaryTree2.countWord(text);
 
-        // Build binary tree from text, which assigns frequency-based structure
-        Node2 root = new BinaryTree2(text).fill();
+
 
         // HashMap to store binary codes for high-frequency words
         HashMap<String, String> codes = new HashMap<>();
 
         // Recursively fill codes based on tree structure
-        fillCodes(codes, root);
+        fillCodes(codes, highFreqWords);
 
         // Marker used to indicate capitalization
         String UC = "`;";
@@ -111,9 +110,6 @@ public class CompressionAlg3 {
             reverseCodes.put(code, key);
         }
 
-        // Output reverse map (debugging purpose)
-        System.out.println(reverseCodes.toString());
-
         codes = null; // Release memory if needed
 
         // Split compressed text into words
@@ -127,7 +123,7 @@ public class CompressionAlg3 {
             String word = wordArray[l];
 
             // If no binary digits are present, skip decoding
-            if (!word.contains("0") && !word.contains("1")) {
+            if (!word.matches(".*\\d.*")) {
 
                 // Check and restore capitalization
                 if (word.contains("`;")) {
@@ -147,12 +143,12 @@ public class CompressionAlg3 {
                 continue;
             }
 
-            // Extract binary code from the word
+            // Extract code from the word
             char[] charArray = word.toCharArray();
             boolean started = false;
             StringBuilder codeBuilder = new StringBuilder();
             for (char c : charArray) {
-                if (c == '0' || c == '1') {
+                if (Character.isDigit(c)) {
                     if (!started) {
                         started = true;
                     }
@@ -195,31 +191,11 @@ public class CompressionAlg3 {
      * Populates the binary code map for each word in the tree.
      *
      * @param codes the HashMap to populate
-     * @param root the root of the binary tree
      */
-    private static void fillCodes(HashMap<String, String> codes, Node2 root) {
-        fillCodesRec(codes, root, "0");
+    private static void fillCodes(HashMap<String, String> codes, ArrayList<Word2> words) {
+        for (int i = 0; i < words.size(); i++) {
+            codes.put(words.get(i).getEditedWord(), String.valueOf(i));
+        }
     }
 
-    /**
-     * Recursive helper method to assign binary paths to each word node.
-     *
-     * @param codes the code map being populated
-     * @param root the current node
-     * @param path the binary path string leading to this node
-     */
-    private static void fillCodesRec(HashMap<String, String> codes, Node2 root, String path) {
-        if (root == null) return;
-
-        // Store current word's binary path
-        codes.put(root.getWord().getEditedWord(), path);
-
-        // Recurse left with appended 0
-        if (root.getLeft() != null)
-            fillCodesRec(codes, root.getLeft(), path + "0");
-
-        // Recurse right with appended 1
-        if (root.getRight() != null)
-            fillCodesRec(codes, root.getRight(), path + "1");
-    }
 }

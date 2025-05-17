@@ -19,7 +19,10 @@ public class CrappyGUI implements ActionListener {
     private JButton saveAsButton;
     private JTextField filenameField;
     private JPanel mainPanel;
+    private JCheckBox huffmanAlgCheckBox;
     private JFrame frame;
+    private boolean huffmanAlg = false;
+    private boolean selectedHuff = false;
 
     public CrappyGUI() {
         switchModeButton.addActionListener(this);
@@ -55,6 +58,7 @@ public class CrappyGUI implements ActionListener {
         if (command.equals(switchModeButton.getActionCommand())) {
             fileSelect.removeAllItems();
             if (inputText.isEditable()) {
+                huffmanAlgCheckBox.setVisible(false);
                 ArrayList<String> fileNames = new ArrayList<>();
                 File[] files = new File("/Users/beckm/IdeaProjects/CompressionProject2").listFiles();
                 for (File file : files) {
@@ -68,6 +72,7 @@ public class CrappyGUI implements ActionListener {
                 compressButton.setText("\\/ Decompress \\/");
                 switchModeButton.setText("Switch to Compression Mode");
             } else {
+                huffmanAlgCheckBox.setVisible(true);
                 ArrayList<String> fileNames = new ArrayList<>();
                 File[] files = new File("/Users/beckm/IdeaProjects/CompressionProject2").listFiles();
                 for (File file : files) {
@@ -93,6 +98,11 @@ public class CrappyGUI implements ActionListener {
                 return;
             }
             try {
+                if(((String)fileSelect.getSelectedItem()).contains("compressedHuff")){
+                    selectedHuff = true;
+                } else {
+                    selectedHuff = false;
+                }
                 String content = FileManager.readFile((String) fileSelect.getSelectedItem());
                 inputText.setText(content);
             } catch (Exception ex) {
@@ -111,7 +121,15 @@ public class CrappyGUI implements ActionListener {
                         showMessageDialog(null, "Please select a file or add text to the input area.");
                         return;
                     }
-                    String compressedText = CompressionAlg3.compress(inputText.getText());
+                    String compressedText;
+                    if (huffmanAlgCheckBox.isSelected()) {
+                        huffmanAlg = true;
+                        compressedText = CompressionAlg3.compress(inputText.getText());
+                    }else {
+                        huffmanAlg = false;
+                        compressedText = CompressionAlg2.compress(inputText.getText());
+                    }
+
                     outputText.setText(compressedText);
                 } catch (Exception ex) {
                     showMessageDialog(null, "Error in compressing text");
@@ -125,7 +143,12 @@ public class CrappyGUI implements ActionListener {
                     if (inputText.getText().isBlank()) {
                         showMessageDialog(null, "Please select a file or add text to the input area.");
                     }
-                    String decompressedText = CompressionAlg3.decompress(inputText.getText());
+                    String decompressedText;
+                    if (selectedHuff) {
+                        decompressedText = CompressionAlg3.decompress(inputText.getText());
+                    } else {
+                        decompressedText = CompressionAlg2.decompress(inputText.getText());
+                    }
                     outputText.setText(decompressedText);
                     if (decompressedText.equals("")) {
                         showMessageDialog(null, "Decompression failed. Please try again.");
@@ -160,7 +183,12 @@ public class CrappyGUI implements ActionListener {
             try {
                 String filename;
                 if (inputText.isEditable()) {
-                    filename = "compressed" + filenameField.getText();
+                    if (huffmanAlg) {
+                        filename = "compressedHuff" + filenameField.getText();
+                    } else {
+                        filename = "compressedNorm" + filenameField.getText();
+                    }
+
                 } else {
                     filename = filenameField.getText();
                 }
